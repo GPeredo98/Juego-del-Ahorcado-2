@@ -1,29 +1,7 @@
+import copy
 import itertools
 import random
 import re
-
-versions = ['v1.0']
-states = {
-    "v1": {
-        "palabras_disponibles": ["Perro", "Botella", "Fideo"],
-        "palabra_secreta": None,
-        "palabra_mostrada": None,
-        "letras_encontradas": None,
-        "vidas": 5
-    }
-}
-
-"""
-states {
-    "v1": {
-        "palabras_disponibles": ["fdask", "fdsfdas"],
-        "palabra_secreta": None,
-        "palabra_mostrada": None,
-        "letras_encontradas": ['a','b'],
-        "vidas": 5
-    }
-}
-"""
 
 
 def get_action(function, args):
@@ -57,6 +35,7 @@ args = {
     "letra": "g"
 }
 """
+obj = {}
 
 
 def quitar_vidas(args):
@@ -106,10 +85,10 @@ def verificar_letra_repetida(args):
         if len(aux) > 0:
             print('Usted ya ingresó esta letra\n')
         else:
-            obj['letras_encontradas'].append(args['letra'])
+            copy.deepcopy(obj['letras_encontradas'].append(args['letra']))
             quitar_vidas(args)
     else:
-        obj['letras_encontradas'].append(args['letra'])
+        copy.deepcopy(obj['letras_encontradas'].append(args['letra']))
         quitar_vidas(args)
 
 
@@ -118,11 +97,25 @@ def seleccionar_palabra(args):
     n = len(obj['palabras_disponibles'])
     rand = random.randint(1, n - 1)
     palabra_secreta_seleccionada = obj['palabras_disponibles'][rand]
+
+    # Update the version and the state
+    actual_version = 'v' + str(round(float(args['versions'][-1].replace('v', '')) + 1, 1))
+    versions = args['versions'] + [actual_version]
+    new_states = copy.deepcopy(args['states'])
     obj['palabra_secreta'] = palabra_secreta_seleccionada
     palabra_mostrada = re.sub(r'[^.]', "_", palabra_secreta_seleccionada)
     palabra_mostrada = palabra_mostrada.replace("", " ")
     obj['palabra_mostrada'] = palabra_mostrada
-    return obj
+    new_states[actual_version] = obj
+    args['states'] = copy.deepcopy(new_states)
+    # Return the updated objects
+    return versions, args['states']
+
+
+def mostrar_palabra_secreta(args):
+    obj = args['states'][args['last_version']]
+
+    print(obj['palabra_secreta'])
 
 
 def destapar_palabra(args):
