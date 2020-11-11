@@ -42,7 +42,6 @@ def get_last_version(args):
 
 # Inicio del juego
 
-# verificarEntrada
 # verificarLetrasOcultas
 """"
 args = { 
@@ -72,14 +71,13 @@ def quitar_vidas(args):
     return obj
 
 
-def verificar_si_es_numero(args):
+def verificar_si_es_numero(letra):
     resultado = True
     try:
-        int(args['letra'])
+        int(letra)
         resultado = True
     except:
         resultado = False
-    print('Debe ingresar una letra, no un número')
     return resultado
 
 
@@ -138,3 +136,38 @@ def destapar_palabra(args):
     palabra_mostrada = palabra_mostrada.replace("", " ")
     obj['palabra_mostrada'] = palabra_mostrada
     return obj
+
+
+def verificar_entrada(args):
+    valido = True
+    if len(args['letra']) > 1:
+        print('Debe ingresar solo una letra\n')
+        valido = False
+
+    if len(args['letra']) < -1:
+        print('Debe ingresar por lo menos una letra\n')
+        valido = False
+
+    if verificar_si_es_numero(args['letra']):
+        print('Debe ingresar una letra, no un número\n')
+        valido = False
+
+    if valido:
+        return args['letra']
+    else:
+        letra = input("Ingrese una letra:\n")
+        args['letra'] = letra
+        verificar_entrada(args)
+
+
+def verificar_letras_ocultas(args):
+    obj = args['states'][args['last_version']]
+
+    letras_de_palabra = list(itertools.chain.from_iterable(obj['palabra_mostrada']))
+
+    # Buscamos si la letra coincide con alguna de la palabra oculta
+    aux = [x for x in letras_de_palabra if x == '_']
+    if len(aux) > 0:
+        return True
+    else:
+        return False
