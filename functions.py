@@ -1,5 +1,6 @@
 import itertools
 import random
+import re
 
 versions = ['v1.0']
 states = {
@@ -42,7 +43,6 @@ def get_last_version(args):
 # Inicio del juego
 
 # verificarEntrada
-# destaparPalabra
 # verificarLetrasOcultas
 """"
 args = { 
@@ -114,10 +114,27 @@ def verificar_letra_repetida(args):
         obj['letras_encontradas'].append(args['letra'])
         quitar_vidas(args)
 
+
 def seleccionar_palabra(args):
     obj = args['states'][args['last_version']]
     n = len(obj['palabras_disponibles'])
     rand = random.randint(1, n - 1)
     palabra_secreta_seleccionada = obj['palabras_disponibles'][rand]
     obj['palabra_secreta'] = palabra_secreta_seleccionada
+    palabra_mostrada = re.sub(r'[^.]', "_", palabra_secreta_seleccionada)
+    palabra_mostrada = palabra_mostrada.replace("", " ")
+    obj['palabra_mostrada'] = palabra_mostrada
+    return obj
+
+
+def destapar_palabra(args):
+    obj = args['states'][args['last_version']]
+    palabra_mostrada = obj['palabra_secreta']
+    letras = ''.join(obj['letras_tomadas'])
+
+    # Usando REGEX tapamos las letras de la palabra, sin incluir las letras ya tomadas
+    palabra_mostrada = re.sub(r'[^.' + letras + ']', "_", palabra_mostrada)
+
+    palabra_mostrada = palabra_mostrada.replace("", " ")
+    obj['palabra_mostrada'] = palabra_mostrada
     return obj
