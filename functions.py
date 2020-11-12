@@ -60,21 +60,6 @@ def verificar_si_es_numero(letra):
     return resultado
 
 
-def cargar_palabras_secretas(args):
-    obj = args['states'][args['last_version']]
-    lista = []
-    lista.append("jacuzzi")
-    lista.append("helicoptero")
-    lista.append("tornado")
-    lista.append("cerveza")
-    lista.append("maestro")
-    lista.append("destornillador")
-    lista.append("farmaceutico")
-    lista.append("medioambiente")
-    obj['palabras_disponibles'] = lista
-    return obj
-
-
 def verificar_letra_repetida(args):
     obj = args['states'][args['last_version']]
     letra = args['letra']
@@ -84,6 +69,7 @@ def verificar_letra_repetida(args):
 
         if len(aux) > 0:
             print('Usted ya ingresó esta letra\n')
+
         else:
             copy.deepcopy(obj['letras_encontradas'].append(args['letra']))
             quitar_vidas(args)
@@ -112,23 +98,50 @@ def seleccionar_palabra(args):
     return versions, args['states']
 
 
-def mostrar_palabra_secreta(args):
+def mostrar_palabra_mostrada(args):
     obj = args['states'][args['last_version']]
-
-    print(obj['palabra_secreta'])
+    while obj['vidas'] != 0:
+        print('Vidas -> ' + str(obj['vidas']))
+        print('Letras -> ' + str(obj['letras_encontradas']))
+        print('Adivina la palabra')
+        print(obj['palabra_mostrada'])
+        print('Adivina la letra')
+        letra = input('Ingresa la letra -> ')
+        letra_valida = get_action(verificar_entrada, {
+            'letra': letra
+        })
+        if letra == letra_valida:
+            get_action(verificar_letra_repetida, {
+                'states': args['states'],
+                'last_version': args['last_version'],
+                'letra': letra
+            })
+        get_action(destapar_palabra, {
+                'states': args['states'],
+                'last_version': args['last_version'],
+                'versions': args['versions'],
+                'letra': letra
+            })
 
 
 def destapar_palabra(args):
     obj = args['states'][args['last_version']]
     palabra_mostrada = obj['palabra_secreta']
-    letras = ''.join(obj['letras_tomadas'])
+    letras = ''.join(obj['letras_encontradas'])
 
     # Usando REGEX tapamos las letras de la palabra, sin incluir las letras ya tomadas
     palabra_mostrada = re.sub(r'[^.' + letras + ']', "_", palabra_mostrada)
 
+    actual_version = 'v' + str(round(float(args['versions'][-1].replace('v', '')) + 1, 1))
+    versions = args['versions'] + [actual_version]
+    new_states = copy.deepcopy(args['states'])
+
     palabra_mostrada = palabra_mostrada.replace("", " ")
     obj['palabra_mostrada'] = palabra_mostrada
-    return obj
+
+    new_states[actual_version] = obj
+    args['states'] = copy.deepcopy(new_states)
+    return args['states']
 
 
 def verificar_entrada(args):

@@ -3,41 +3,14 @@ from functions import *
 versions = ['v1.0']
 states = {
     "v1.0": {
-        "palabras_disponibles": ["perro", "botella", "fideo"],
+        "palabras_disponibles": ["perro", "botella", "fideo", "zapato", "messi"],
         "palabra_secreta": None,
         "palabra_mostrada": None,
-        "letras_encontradas": None,
+        "letras_encontradas": [],
         "vidas": 5
     }
 }
 
-"""
-states {
-    "v1": {
-        "palabras_disponibles": ["fdask", "fdsfdas"],
-        "palabra_secreta": None,
-        "palabra_mostrada": None,
-        "letras_encontradas": ['a','b'],
-        "vidas": 5
-    }
-}
-"""
-
-
-def getStates():
-    return states
-
-
-def getVersions():
-    return versions
-
-
-def setStates(newStates):
-    states = newStates
-
-
-def setVersions(newVersions):
-    versions = newVersions
 
 
 def opcion_agregar_palabra():
@@ -51,11 +24,13 @@ def opcion_jugar():
         'versions': versions,
         'last_version': get_action(get_last_version, {'versions': versions})
     })
-    get_action(mostrar_palabra_secreta, {
+    vivo = get_action(mostrar_palabra_mostrada, {
         'states': new_states,
         'versions': new_versions,
         'last_version': get_action(get_last_version, {'versions': new_versions})
     })
+    if vivo:
+        mostar_menu()
 
 
 def mostar_menu():
