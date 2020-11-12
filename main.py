@@ -36,8 +36,7 @@ def opcion_jugar():
 def mostar_menu():
     print('===== MENU =====')
     print('1 Jugar')
-    print('2 Agregar palabra')
-    print('3 Salir')
+    print('2 Salir')
     opcion = input("-> ")
     ejecutar_opcion(int(opcion))
 
@@ -45,7 +44,7 @@ def mostar_menu():
 def ejecutar_opcion(opcion):
     if opcion == 1:
         opcion_jugar()
-    elif opcion == 2:
+    elif opcion == 9:
         opcion_agregar_palabra()
     else:
         exit()

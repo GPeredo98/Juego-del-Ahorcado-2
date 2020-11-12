@@ -63,12 +63,13 @@ def verificar_si_es_numero(letra):
 def verificar_letra_repetida(args):
     obj = args['states'][args['last_version']]
     letra = args['letra']
-    letras_de_palabra = list(itertools.chain.from_iterable(obj['palabra_secreta']))
+    # letras_de_palabra = list(itertools.chain.from_iterable(obj['palabra_secreta']))
+    letras_de_palabra = obj['letras_encontradas']
     if len(obj['letras_encontradas']) > 0:
         aux = [x for x in letras_de_palabra if x == letra]
 
         if len(aux) > 0:
-            print('Usted ya ingresó esta letra\n')
+            print('Usted ya ingresó esta letra')
 
         else:
             copy.deepcopy(obj['letras_encontradas'].append(args['letra']))
@@ -101,12 +102,13 @@ def seleccionar_palabra(args):
 def mostrar_palabra_mostrada(args):
     obj = args['states'][args['last_version']]
     while obj['vidas'] != 0:
-        print('Vidas -> ' + str(obj['vidas']))
-        print('Letras -> ' + str(obj['letras_encontradas']))
-        print('Adivina la palabra')
+        print('\n')
+        print('Adivina la palabra secreta')
+        print('Vidas: ' + str(obj['vidas']))
+        print('Letras: ' + str(obj['letras_encontradas']))
         print(obj['palabra_mostrada'])
-        print('Adivina la letra')
-        letra = input('Ingresa la letra -> ')
+
+        letra = input('Ingresa la letra -> \n').lower()
         letra_valida = get_action(verificar_entrada, {
             'letra': letra
         })
@@ -122,6 +124,19 @@ def mostrar_palabra_mostrada(args):
                 'versions': args['versions'],
                 'letra': letra
             })
+
+        aux = {
+            'states': args['states'],
+            'last_version': args['last_version'],
+            'versions': args['versions'],
+            'letra': letra
+        }
+        if not verificar_letras_ocultas(aux):
+            print(obj['palabra_mostrada'])
+            print("¡GANASTE!")
+            break
+
+    print("FIN DEL JUEGO")
 
 
 def destapar_palabra(args):
